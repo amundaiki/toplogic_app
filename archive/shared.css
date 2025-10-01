@@ -18,11 +18,6 @@
     --color-error-bg: #ffebee;
     --color-error-border: #ef5350;
     
-    /* Blue farger for info-bokser */
-    --color-blue: #1976d2;
-    --color-blue-light: #e3f2fd;
-    --color-blue-dark: #0d47a1;
-    
     /* Typography */
     --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     --font-size-small: 12px;
@@ -155,13 +150,13 @@ body {
     background: var(--color-white);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    max-width: 1200px; /* Økt til 1200px for bedre plass */
+    max-width: 600px; /* Standardisert til 600px for alle sider */
     width: 100%;
     overflow: hidden;
     margin-top: 60px; /* Space for fixed nav */
 }
 
-/* Header for hjemmesiden med bakgrunnsbilde og rød overlay */
+/* Header for hjemmesiden med bakgrunnsbilde */
 .toplogic-header-home {
     background: url('https://www.toplogic.no/wp-content/uploads/2023/01/Toplogic-transport-2.jpg') center/cover;
     color: var(--color-white);
@@ -177,18 +172,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(199, 32, 39, 0.9) 0%, rgba(165, 26, 30, 0.8) 100%);
+    background: rgba(199, 32, 39, 0.85);
     pointer-events: none;
-    z-index: 1;
 }
 
-/* Sørger for at innhold kommer over overlayen */
-.toplogic-header-home > * {
-    position: relative;
-    z-index: 2;
-}
-
-/* Header for apper med animerte path-mønster */
+/* Header for apper med animerte sirkel-mønster */
 .toplogic-header {
     background: linear-gradient(90deg, var(--color-red) 0%, var(--color-red-dark) 100%);
     color: var(--color-white);
@@ -205,66 +193,17 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" fill="none"><path d="M10,20 Q50,10 90,20 T170,20" stroke="white" stroke-width="1" opacity="0.1" fill="none"/><path d="M20,40 Q60,30 100,40 T180,40" stroke="white" stroke-width="1" opacity="0.08" fill="none"/><path d="M0,60 Q40,50 80,60 T160,60" stroke="white" stroke-width="1" opacity="0.06" fill="none"/><path d="M30,80 Q70,70 110,80 T190,80" stroke="white" stroke-width="1" opacity="0.04" fill="none"/></svg>') repeat-x;
-    animation: backgroundPaths 30s linear infinite;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 30" fill="white" opacity="0.05"><circle cx="15" cy="15" r="4"/><circle cx="45" cy="15" r="4"/><circle cx="75" cy="15" r="4"/><circle cx="105" cy="15" r="4"/></svg>') repeat;
+    animation: floatPattern 20s linear infinite;
     pointer-events: none;
 }
 
-.toplogic-header::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 80" fill="none"><path d="M15,15 Q45,5 75,15 Q105,25 135,15" stroke="white" stroke-width="0.5" opacity="0.12" fill="none"/><path d="M25,35 Q55,25 85,35 Q115,45 145,35" stroke="white" stroke-width="0.5" opacity="0.08" fill="none"/><path d="M5,55 Q35,45 65,55 Q95,65 125,55" stroke="white" stroke-width="0.5" opacity="0.06" fill="none"/><circle cx="20" cy="20" r="1" fill="white" opacity="0.1"/><circle cx="80" cy="45" r="1" fill="white" opacity="0.08"/><circle cx="130" cy="65" r="1" fill="white" opacity="0.06"/></svg>') repeat;
-    background-size: 300px 120px;
-    animation: pathFloat 25s linear infinite reverse;
-    mix-blend-mode: overlay;
-    pointer-events: none;
-}
-
-@keyframes backgroundPaths {
-    0% { 
-        transform: translateX(0px) translateY(0px);
-        opacity: 1;
-    }
-    25% { 
-        transform: translateX(-15px) translateY(-8px);
-        opacity: 0.8;
-    }
-    50% { 
-        transform: translateX(0px) translateY(-15px);
-        opacity: 0.6;
-    }
-    75% { 
-        transform: translateX(15px) translateY(-8px);
-        opacity: 0.8;
-    }
-    100% { 
-        transform: translateX(0px) translateY(0px);
-        opacity: 1;
-    }
-}
-
-/* Ekstra animasjon for mer komplekse stier */
-@keyframes pathFloat {
-    0% { 
-        transform: translateX(0px) scale(1);
-        filter: opacity(0.8);
-    }
-    33% { 
-        transform: translateX(-20px) scale(1.05);
-        filter: opacity(0.6);
-    }
-    66% { 
-        transform: translateX(20px) scale(0.95);
-        filter: opacity(0.9);
-    }
-    100% { 
-        transform: translateX(0px) scale(1);
-        filter: opacity(0.8);
-    }
+@keyframes floatPattern {
+    0% { transform: translateX(0px) translateY(0px); }
+    25% { transform: translateX(-10px) translateY(-5px); }
+    50% { transform: translateX(0px) translateY(-10px); }
+    75% { transform: translateX(10px) translateY(-5px); }
+    100% { transform: translateX(0px) translateY(0px); }
 }
 
 .toplogic-header .header-logo,
@@ -440,17 +379,6 @@ body {
     box-shadow: none;
 }
 
-.btn-success {
-    background: #0f9d58;
-    color: var(--color-white);
-}
-
-.btn-success:hover {
-    background: #0d8a4d;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
-}
-
 .btn-secondary {
     background: #ccc;
     color: #222;
@@ -519,12 +447,12 @@ body {
 /* Progress Bar */
 .progress-bar {
     width: 100%;
-    background: transparent;
-    border-radius: var(--radius-md);
+    height: 4px;
+    background: var(--color-gray-border);
+    border-radius: 2px;
     margin-top: var(--spacing-xl);
     overflow: hidden;
     display: none;
-    position: relative;
 }
 
 .progress-bar.show {
@@ -532,157 +460,10 @@ body {
 }
 
 .progress-fill {
-    height: 8px;
-    background: linear-gradient(90deg, var(--color-red) 0%, var(--color-red-dark) 100%);
+    height: 100%;
+    background: var(--color-red);
     width: 0%;
     transition: width 0.3s ease;
-    border-radius: var(--radius-md);
-    position: relative;
-}
-
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-size-small);
-    color: var(--color-gray-dark);
-    font-weight: 500;
-}
-
-.progress-percentage {
-    color: var(--color-red);
-    font-weight: 600;
-}
-
-.progress-details {
-    margin-top: var(--spacing-sm);
-    font-size: var(--font-size-xs);
-    color: var(--color-gray-medium);
-    text-align: center;
-}
-
-.progress-file-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-}
-
-.progress-current-file {
-    color: var(--color-blue);
-    font-weight: 500;
-    max-width: 60%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.progress-file-size {
-    color: var(--color-gray-medium);
-    font-size: var(--font-size-xs);
-}
-
-/* Animasjon for progressbar-fyll */
-.progress-fill.animate {
-    animation: progressGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes progressGlow {
-    0% {
-        box-shadow: 0 0 5px rgba(199, 32, 39, 0.3);
-    }
-    100% {
-        box-shadow: 0 0 15px rgba(199, 32, 39, 0.6), 0 0 25px rgba(199, 32, 39, 0.3);
-    }
-}
-
-/* Google Sheet Link Button */
-.sheet-link-container {
-    display: none;
-    margin-top: var(--spacing-xl);
-}
-
-.sheet-link-container.show {
-    display: block;
-    animation: slideInFromTop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.sheet-link-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-md);
-    background: linear-gradient(135deg, #0f9d58 0%, #0b8043 100%) !important;
-    color: white !important;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: none;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
-    overflow: hidden;
-}
-
-.sheet-link-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-}
-
-.sheet-link-btn:hover::before {
-    left: 100%;
-}
-
-.sheet-link-btn:hover {
-    background: linear-gradient(135deg, #0b8043 0%, #087f3a 100%) !important;
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 24px rgba(15, 157, 88, 0.35);
-    color: white !important;
-    text-decoration: none;
-}
-
-.sheet-link-btn:active {
-    transform: translateY(0) scale(1);
-    box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
-}
-
-.sheet-link-icon {
-    width: 24px;
-    height: 24px;
-}
-
-.sheet-link-arrow {
-    width: 20px;
-    height: 20px;
-    margin-left: auto;
-}
-
-.sheet-link-text {
-    text-align: center;
-    font-size: var(--font-size-xs);
-    color: var(--color-gray-medium);
-    margin-top: var(--spacing-sm);
-    font-weight: 500;
-    font-family: monospace;
-    letter-spacing: 0.5px;
-    opacity: 0.7;
-}
-
-@keyframes slideInFromTop {
-    from {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 /* Messages */

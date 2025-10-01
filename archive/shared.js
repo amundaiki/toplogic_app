@@ -1,9 +1,9 @@
-import { TopLogicConfig } from '../config/index.js';
-
 // TopLogic Shared JavaScript Functionality
-export class TopLogicApp {
+// Avhenger av config.js som må lastes først
+
+class TopLogicApp {
     constructor(options = {}) {
-        this.config = TopLogicConfig;
+        this.config = window.TopLogicConfig;
         this.options = {
             enableDragDrop: true,
             enableStatusCheck: true,
@@ -71,7 +71,7 @@ export class TopLogicApp {
         
         // Logo
         const logoLink = document.createElement('a');
-                        logoLink.href = '/';
+        logoLink.href = '/';
         logoLink.innerHTML = `<img src="${this.config.LOGOS.toplogic}" alt="TopLogic" class="nav-logo">`;
         
         // Breadcrumb
@@ -93,7 +93,7 @@ export class TopLogicApp {
         
         // Hjem lenke
         const homeLink = document.createElement('a');
-                        homeLink.href = '/';
+        homeLink.href = '/';
         homeLink.textContent = this.config.NAVIGATION.home.title;
         breadcrumb.appendChild(homeLink);
         
@@ -128,12 +128,12 @@ export class TopLogicApp {
 
     createBackLink() {
         // Sjekk om vi ikke er på hovedsiden
-                    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
             return;
         }
 
         const backLink = document.createElement('a');
-                        backLink.href = '/';
+        backLink.href = '/';
         backLink.className = 'back-link';
         backLink.textContent = 'Tilbake til hovedside';
         
@@ -178,7 +178,7 @@ export class TopLogicApp {
                 fileInput.setAttribute('multiple', 'multiple');
             }
         } catch (_) {
-            // Ignorer dersom ikke støttet
+            // Ignorer dersom browser ikke støtter
         }
 
         // File input change handler
@@ -217,14 +217,6 @@ export class TopLogicApp {
         e.stopPropagation();
     }
 
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
     handleFileSelection(files, settings, fileInfo, fileName) {
         if (!files || files.length === 0) return;
 
@@ -250,6 +242,7 @@ export class TopLogicApp {
             if (fileInfo) fileInfo.classList.add('show');
             if (fileName) fileName.textContent = `${validatedFiles.length} fil${validatedFiles.length === 1 ? '' : 'er'} valgt`;
 
+            // Render i egen container dersom oppgitt
             if (settings.fileListContainerId) {
                 const container = document.getElementById(settings.fileListContainerId);
                 if (container) {
@@ -272,8 +265,9 @@ export class TopLogicApp {
             return;
         }
 
-        // Enkeltfil
+        // Enkeltfil som før
         const file = files[0];
+
         if (!this.config.CONFIG_HELPERS.isValidFileType(file, settings.allowedTypes)) {
             const error = this.config.APP_CONFIG.messages.error.invalidFileType;
             if (settings.onValidationError) settings.onValidationError(error);
@@ -284,8 +278,10 @@ export class TopLogicApp {
             if (settings.onValidationError) settings.onValidationError(error);
             return;
         }
+
         if (fileName) fileName.textContent = file.name;
         if (fileInfo) fileInfo.classList.add('show');
+
         if (settings.onFileSelect) settings.onFileSelect(file);
     }
 
@@ -462,28 +458,11 @@ export class TopLogicApp {
             let responseData = null;
             try {
                 const responseText = await response.text();
-                console.log('🔍 Raw response text:', responseText);
-
+                
                 if (responseText.trim()) {
-                    // Try to parse as JSON
-                    try {
-                        responseData = JSON.parse(responseText);
-                        console.log('🔍 Parsed response data:', responseData);
-                    } catch (jsonError) {
-                        // If not JSON, check if it's just "Accepted" or similar text response
-                        console.log('⚠️ Response is not JSON, got text:', responseText);
-                        // Create a minimal response object for "Accepted" responses
-                        if (responseText.toLowerCase().includes('accepted')) {
-                            responseData = {
-                                status: 'accepted',
-                                message: responseText
-                            };
-                            console.log('✅ Treated as accepted response');
-                        }
-                    }
+                    responseData = JSON.parse(responseText);
                 }
             } catch (parseError) {
-                console.warn('⚠️ Could not parse response:', parseError.message);
                 // Response ikke JSON, behandler som vanlig suksess
             }
             
@@ -496,11 +475,11 @@ export class TopLogicApp {
             }
 
             // Success
-            const successMessage = webhookType === 'test'
+            const successMessage = webhookType === 'test' 
                 ? this.config.APP_CONFIG.messages.success.testMode
                 : this.config.APP_CONFIG.messages.success.documentUploaded;
-
-            if (settings.onSuccess) settings.onSuccess(successMessage, responseData);
+            
+            if (settings.onSuccess) settings.onSuccess(successMessage);
 
         } catch (error) {
             if (progressInterval) clearInterval(progressInterval);
@@ -519,9 +498,7 @@ export class TopLogicApp {
         messageElement.textContent = text;
         messageElement.className = `message ${type} show`;
 
-        // Don't auto-hide success messages - keep them visible
-        // Only auto-hide info and error messages
-        if ((type === 'info' || type === 'error') && duration > 0) {
+        if (type === 'success' && duration > 0) {
             setTimeout(() => {
                 messageElement.classList.remove('show');
             }, duration);
@@ -532,27 +509,17 @@ export class TopLogicApp {
     setProgress(percentage, show = true, options = {}) {
         const progressBar = document.getElementById('progressBar');
         const progressFill = document.getElementById('progressFill');
-
+        
         if (progressBar && show) {
             progressBar.classList.add('show');
-
+            
             // Opprett eller oppdater progress info elementer
             this.updateProgressInfo(progressBar, percentage, options);
         }
-
-        if (progressBar && !show) {
-            // Hide progress bar and reset
-            progressBar.classList.remove('show');
-            if (progressFill) {
-                progressFill.style.width = '0%';
-                progressFill.classList.remove('animate');
-            }
-            this.clearProgressInfo(progressBar);
-        }
-
+        
         if (progressFill) {
             progressFill.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
-
+            
             // Legg til animasjon under aktiv opplasting
             if (percentage > 0 && percentage < 100) {
                 progressFill.classList.add('animate');
@@ -560,9 +527,18 @@ export class TopLogicApp {
                 progressFill.classList.remove('animate');
             }
         }
-
-        // Keep progress bar visible when completed - don't auto-hide
-        // User can manually reset with "Nullstill" button
+        
+        if (percentage >= 100 && progressBar) {
+            setTimeout(() => {
+                progressBar.classList.remove('show');
+                if (progressFill) {
+                    progressFill.style.width = '0%';
+                    progressFill.classList.remove('animate');
+                }
+                // Fjern progress info
+                this.clearProgressInfo(progressBar);
+            }, 2000); // Økt tid for å se fullført status
+        }
     }
 
     // Oppdater detaljert progress-informasjon
@@ -601,17 +577,27 @@ export class TopLogicApp {
             <span class="progress-percentage">${Math.round(percentage)}%</span>
         `;
         
-        // Detaljert informasjon - kun vis total størrelse hvis flere filer
+        // Detaljert informasjon
         let detailsHtml = '';
-
-        if (totalFiles > 1 && totalSize > 0) {
+        
+        if (totalFiles > 1) {
             detailsHtml += `
                 <div class="progress-file-info">
+                    <span>Fil ${currentFileIndex + 1} av ${totalFiles}</span>
                     <span>${TopLogicUtils.formatFileSize(processedSize)} / ${TopLogicUtils.formatFileSize(totalSize)}</span>
                 </div>
             `;
         }
-
+        
+        if (currentFile) {
+            detailsHtml += `
+                <div class="progress-file-info">
+                    <span class="progress-current-file">${currentFile}</span>
+                    <span class="progress-file-size">${TopLogicUtils.formatFileSize(currentFileSize)}</span>
+                </div>
+            `;
+        }
+        
         progressDetails.innerHTML = detailsHtml;
     }
 
@@ -831,17 +817,16 @@ export class TopLogicApp {
         }, 100);
     }
 
-    // Vis batch ID i UI med copy button
+    // Vis batch ID i UI (skjult som standard - vises kun i konsollen)
     showBatchId(batchId) {
         console.log('🆔 Batch ID generert:', batchId);
-
+        
         // Finn batch ID display element hvis det finnes
         let batchIdDisplay = document.querySelector('.batch-id-display');
         if (batchIdDisplay) {
-            batchIdDisplay.innerHTML = `
-                <span>Batch ID: <strong>#${batchId}</strong></span>
-            `;
-            batchIdDisplay.style.display = 'flex';
+            batchIdDisplay.textContent = `Batch ID: ${batchId}`;
+            // Behold skjult - vises kun via Google Sheet-knappen
+            batchIdDisplay.style.display = 'none';
         }
     }
 
@@ -859,3 +844,50 @@ export class TopLogicApp {
         }
     }
 }
+
+// Password-protected app access
+class AppPasswordManager {
+    static enablePasswordProtection(linkId, password, redirectUrl, promptText) {
+        const link = document.getElementById(linkId);
+        if (!link) return;
+
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const userPassword = prompt(promptText);
+            if (userPassword === password) {
+                link.style.opacity = '1';
+                link.style.cursor = 'pointer';
+                link.classList.remove('btn-locked');
+                window.location.href = redirectUrl;
+            } else if (userPassword !== null) {
+                alert('Feil passord');
+            }
+        });
+    }
+}
+
+// Utility functions
+const TopLogicUtils = {
+    // Format file size
+    formatFileSize: (bytes) => {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        if (bytes === 0) return '0 Bytes';
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    },
+    
+    // Format timestamp
+    formatDate: (isoString) => {
+        return new Date(isoString).toLocaleString('no-NO');
+    },
+    
+    // Generate unique ID
+    generateId: () => {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+};
+
+// Export til global scope
+window.TopLogicApp = TopLogicApp;
+window.AppPasswordManager = AppPasswordManager;
+window.TopLogicUtils = TopLogicUtils; 
